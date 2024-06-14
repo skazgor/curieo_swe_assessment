@@ -11,13 +11,14 @@ class Transaction:
         self.time_stamp = time_stamp
         self.transaction_type = transaction_type
 
-        # to calculate the balance
+        # balance before the transaction
         self.balance = 0
-        self.cumulative_sum = 0
-        self.cumulative_sum_including_current = 0
 
         # for withdrawal transactions
         self.can_withdraw = False
+
+        # total number of withdrawals successful including the current transaction
+        self.successful_withdrawals = 0
     
 
     def __ge__(self, __value: object) -> bool:
@@ -27,7 +28,7 @@ class Transaction:
         return self.time_stamp < __value.time_stamp  
     
     def __str__(self) -> str:
-        return f"{self.amount} {self.time_stamp} {self.transaction_type} {self.balance} {self.cumulative_sum} {self.cumulative_sum_including_current} {self.can_withdraw}"
+        return f"{self.amount} {self.time_stamp} {self.transaction_type} {self.balance} {self.can_withdraw}"
 
 class Transactions:
     def __init__(self, initial_balance):
@@ -35,7 +36,7 @@ class Transactions:
         self.initial_balance = initial_balance
         
         self.balance = initial_balance
-        self.cumulative_sum = 0
+        self.successful_withdrawals = 0
         
     
     def add_transaction(self, transaction):
@@ -45,10 +46,8 @@ class Transactions:
         self.transactions.append(transaction)
         
         transaction.balance = self.balance
-        transaction.cumulative_sum = self.cumulative_sum
 
         if transaction.transaction_type == TransactionType.DEPOSIT:
-            self.cumulative_sum += transaction.amount
             self.balance += transaction.amount
             transaction.can_withdraw = True
         
@@ -56,9 +55,10 @@ class Transactions:
             if self.balance >= transaction.amount:
                 transaction.can_withdraw = True
                 self.balance -= transaction.amount
+                self.successful_withdrawals += 1
         
-        transaction.cumulative_sum_including_current = self.cumulative_sum
-        
+        transaction.successful_withdrawals = self.successful_withdrawals
+               
     
     def sort(self):
         return sorted(self.transactions)
@@ -68,15 +68,12 @@ class Transactions:
         self.transactions = self.sort()
 
         balance = self.initial_balance
-        cumulative_sum = 0
 
         for transaction in self.transactions:
 
             transaction.balance = balance
-            transaction.cumulative_sum = cumulative_sum
 
             if transaction.transaction_type == TransactionType.DEPOSIT:
-                cumulative_sum += transaction.amount
                 balance += transaction.amount
                 transaction.can_withdraw = True
             
@@ -84,11 +81,12 @@ class Transactions:
                 if balance >= transaction.amount:
                     transaction.can_withdraw = True
                     balance -= transaction.amount
+                    self.successful_withdrawals += 1
             
-            transaction.cumulative_sum_including_current = cumulative_sum
-        
+            transaction.successful_withdrawals = self.successful_withdrawals
+            
         self.balance = balance
-        self.cumulative_sum = cumulative_sum
+        
     def print_transactions(self):
         for transaction in self.transactions:
             print(transaction)

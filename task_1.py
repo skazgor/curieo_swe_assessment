@@ -28,7 +28,7 @@ with open(input_file, 'r') as file:
     
     transactions.set_initial_feasible_withdrawal()
 
-    transactions.print_transactions()
+    # transactions.print_transactions()
 
     query = Query()
     end_index = len(transactions.transactions) - 1
