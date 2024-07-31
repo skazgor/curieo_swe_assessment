@@ -1,5 +1,6 @@
 # curieo_swe_assessment
-
+## Assignment
+[The Assignment](curieo_swe_assessment.pdf)
 ## Requirements
 - python 3.8
 
